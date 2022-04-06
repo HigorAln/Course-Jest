@@ -9,6 +9,7 @@ export default {
 	collectCoverageFrom: [
 		'<rootDir>/src/components/**/*.tsx',
 		'<rootDir>/src/pages/**/*.tsx',
+		'<rootDir>/src/hooks/**/*.tsx',
 	],
 	coverageDirectory: 'coverage',
 	coverageProvider: 'v8',
