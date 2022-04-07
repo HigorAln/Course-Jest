@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 interface ISeach {
 	doSearch: (term: string) => void;
@@ -7,9 +7,22 @@ interface ISeach {
 export default function Search({ doSearch }: ISeach) {
 	const [term, setTerm] = useState('');
 
+  function submitHandler(e: FormEvent){
+    e.preventDefault()
+    doSearch(term)
+  }
+
+  function inputHandler(e: any){
+    setTerm(e.target.value)
+
+    if(e.target.value === ''){
+      doSearch("")
+    }
+  }
+
 	return (
 		<form
-			onSubmit={() => doSearch(term)}
+			onSubmit={submitHandler}
 			data-testid="search"
 			name="search-form"
 			className="relative mt-6 max-w-lg mx-auto"
@@ -28,6 +41,7 @@ export default function Search({ doSearch }: ISeach) {
 
 			<input
 				value={term}
+        onInput={inputHandler}
 				onChange={e => setTerm(e.target.value)}
 				className="w-full border rounded-md pl-10 pr-4 py-2 focus:border-blue-500 focus:outline-none focus:shadow-outline"
 				type="search"
