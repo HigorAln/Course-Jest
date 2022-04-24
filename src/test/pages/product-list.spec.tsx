@@ -55,7 +55,7 @@ describe('ProductList', () => {
     })
   });
 
-  fit('should filter the products list when a search is performed', async () => {
+  it('should filter the products list when a search is performed', async () => {
     const searchTerm = "relogio bonito"
     server.createList("product", 2);
 
@@ -81,6 +81,50 @@ describe('ProductList', () => {
     })
   });
 
-  it.todo('should display the total quantity of products')
-  it.todo("should display products (singular) when there is onlu one product")
+  it('should display the total quantity of products', async () => {
+    server.createList("product", 10);
+
+    renderProductList();
+
+    await waitFor(()=>{
+      expect(screen.getByText(/10 Products/i)).toBeInTheDocument()
+    })
+  })
+
+  it("should display products (singular) when there is onlu one product", async ()=>{
+    server.create("product");
+
+    renderProductList();
+
+    await waitFor(()=>{
+      expect(screen.getByText(/1 Product$/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should display proper quantity when list is filtered', async () => {
+    const searchTerm = "relogio bonito"
+    server.createList("product", 2);
+
+    server.create("product", {
+      title: searchTerm,
+      id: "20"
+    })
+
+    renderProductList();
+
+    await waitFor(() => {
+      expect(screen.getByText(/3 Products/i)).toBeInTheDocument()
+    })
+
+    const form = screen.getByRole("form")
+    const input = screen.getByRole("searchbox")
+
+    await userEvent.type(input, searchTerm)
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(screen.getByText(/1 Product/i)).toBeInTheDocument()
+    })
+  });
+
 });

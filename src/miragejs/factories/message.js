@@ -1,11 +1,5 @@
-/*
- * Mirage JS guide on Factories: https://miragejs.com/docs/data-layer/factories
- */
+/* eslint-disable import/no-anonymous-default-export */
 import { Factory } from 'miragejs';
-
-/*
- * Faker Github repository: https://github.com/Marak/Faker.js#readme
- */
 import faker from 'faker';
 
 export default {
