@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import ProductCard from '../components/product-cart';
 import Search from '../components/search';
 import { useFetchProducts } from '../hooks/use-fetch-products';
+import { useCartStore } from '../../store/cart';
 
 const Home: NextPage = () => {
   const {products, error} = useFetchProducts()
   const [term, setTerm] = useState('')
   const [localProducts, setLocalProducts] = useState([])
+  const addToCart = useCartStore(state => state.actions.add)
 
   useEffect(()=>{
     if(term === ""){
@@ -43,9 +45,9 @@ const Home: NextPage = () => {
             localProducts.map((product: any) => {
               return (
                 <ProductCard
-								addToCard={() => {}}
-								product={product}
-								key={product.id}
+                  addToCard={addToCart}
+                  product={product}
+                  key={product.id}
                 />
               );
             })

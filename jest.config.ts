@@ -10,6 +10,7 @@ export default {
 		'<rootDir>/src/components/**/*.tsx',
 		'<rootDir>/src/pages/**/*.tsx',
 		'<rootDir>/src/hooks/**/*.tsx',
+		'!<rootDir>/src/pages/_app.tsx',
 	],
 	coverageDirectory: 'coverage',
 	coverageProvider: 'v8',
