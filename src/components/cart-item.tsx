@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState } from 'react';
 import { useCartStore } from '../../store/cart';
 
 interface ICartItem {
@@ -7,21 +6,12 @@ interface ICartItem {
 		title: string;
 		price: string;
 		image: string;
+    quantity: number;
 	};
 }
 
 export default function CartItem({ product }: ICartItem) {
-	const [quantity, setQuantity] = useState(1);
-  const { remove } = useCartStore((store) => store.actions)
-
-	function increment() {
-		setQuantity(quantity + 1);
-	}
-
-	function decrement() {
-		if (quantity === 0) return;
-		setQuantity(quantity - 1);
-	}
+  const { remove, increase, decrease } = useCartStore((store) => store.actions)
 
 	return (
 		<div className="flex justify-between mt-6" data-testid="cart-item">
@@ -40,28 +30,8 @@ export default function CartItem({ product }: ICartItem) {
 					<div className="flex   items-center mt-2">
 						<button
 							className="text-gray-500 focus:outline-none focus:text-gray-600"
-							onClick={decrement}
-              data-testid="decrement"
-						>
-							<svg
-								className="h-5 w-5"
-								fill="none"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								<path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-							</svg>
-						</button>
-						<span className="text-gray-700 mx-2" data-testid="quantity">
-							{quantity}
-						</span>
-						<button
-							className="text-gray-500 focus:outline-none focus:text-gray-600"
-							onClick={increment}
-              data-testid="increment"
+							onClick={() => decrease(product)}
+              data-testid="decrease"
 						>
 							<svg
 								className="h-5 w-5"
@@ -73,6 +43,26 @@ export default function CartItem({ product }: ICartItem) {
 								stroke="currentColor"
 							>
 								<path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+							</svg>
+						</button>
+						<span className="text-gray-700 mx-2" data-testid="quantity">
+							{product.quantity}
+						</span>
+						<button
+							className="text-gray-500 focus:outline-none focus:text-gray-600"
+							onClick={()=> increase(product)}
+              data-testid="increase"
+						>
+							<svg
+								className="h-5 w-5"
+								fill="none"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+							>
+								<path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
 							</svg>
 						</button>
 					</div>
