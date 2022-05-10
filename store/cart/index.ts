@@ -1,3 +1,4 @@
+import produce from 'immer'
 import create from 'zustand'
 
 const initialState = {
@@ -5,20 +6,50 @@ const initialState = {
   products: []
 }
 
-const addProduct = (store: Storage, product: any) => {
-  if(store.state.products.includes(product)) {
-    return store.state.products
-  }
-  return [...store.state.products, product]
-}
+export const useCartStore = create((set: any) => {
+  const setState = (fn: any) => set(produce(fn));
 
-export const useCartStore = create((set: any) => ({
-  state: {
-    ...initialState
-  },
-  actions: {
-    toggle: () => set((store: any) => ({ state: { ...store.state, open: !store.state.open } })),
-    reset: () => set((store: any) => ({state: {...initialState}})), 
-    add: (product: any) => set((store: any) => ({ state: { open: true, products: addProduct(store, product) } })),
-  },
-}))
+  return {
+    state: {
+      ...initialState
+    },
+    actions: {
+      toggle(){
+        setState(( { state }: { state: any} )=>{
+          state.open = !state.open
+        })
+      },
+      add(product: any){
+        setState(( {state}: { state: any} ) => {
+          const doesntExist = !state.products.find(({ id }:{ id: string }) => id === product.id)
+
+          if(doesntExist) {
+            state.products.push(product);
+            state.open = true;
+          }
+        })
+      },
+      remove(product: any) {
+        setState(({ state }: { state: any}) => {
+          const exists = !!state.products.find(({ id }:{ id: string }) => id === product.id)
+
+          if(exists){
+            state.products = state.products.filter(({ id }:{ id: string }) => {
+              return id !== product.id;
+            })
+          }
+        })
+      },
+      removeAll(){
+        setState(({ state }: { state: any}) => {
+          state.products = [];
+        })
+      },
+      reset(){
+        setState((store: any) => {
+          store.state = initialState
+        })
+      }, 
+    },
+  }
+})

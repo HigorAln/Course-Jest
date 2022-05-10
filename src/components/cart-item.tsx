@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from 'react';
+import { useCartStore } from '../../store/cart';
 
 interface ICartItem {
 	product: {
@@ -11,6 +12,7 @@ interface ICartItem {
 
 export default function CartItem({ product }: ICartItem) {
 	const [quantity, setQuantity] = useState(1);
+  const { remove } = useCartStore((store) => store.actions)
 
 	function increment() {
 		setQuantity(quantity + 1);
@@ -32,10 +34,14 @@ export default function CartItem({ product }: ICartItem) {
 				/>
 				<div className="mx-3">
 					<h3 className="text-sm text-gray-600">{product.title}</h3>
+          <button onClick={()=>{
+            remove(product)
+          }}>remove</button>
 					<div className="flex   items-center mt-2">
 						<button
 							className="text-gray-500 focus:outline-none focus:text-gray-600"
 							onClick={decrement}
+              data-testid="decrement"
 						>
 							<svg
 								className="h-5 w-5"
@@ -55,6 +61,7 @@ export default function CartItem({ product }: ICartItem) {
 						<button
 							className="text-gray-500 focus:outline-none focus:text-gray-600"
 							onClick={increment}
+              data-testid="increment"
 						>
 							<svg
 								className="h-5 w-5"

@@ -1,6 +1,10 @@
 import { screen, render, fireEvent } from '@testing-library/react';
-import { debug } from 'console';
+import { renderHook } from '@testing-library/react-hooks';
+import { useCartStore } from '../../store/cart';
 import CardItem from './cart-item';
+import { setAutoFreeze } from 'immer'
+
+setAutoFreeze(false)
 
 const product = {
 	title: 'Relogio bonito',
@@ -19,6 +23,7 @@ describe('CardItem Component', () => {
 
 		expect(screen.getByTestId('cart-item')).toBeInTheDocument();
 	});
+
 	it('should display proper content', () => {
 		renderProductCard();
 
@@ -44,7 +49,7 @@ describe('CardItem Component', () => {
 	it('should increase quantity by 1 when clicking on + button', () => {
 		renderProductCard();
 
-		const [_, button] = screen.getAllByRole('button');
+    const button = screen.getByTestId("increment")
 
 		fireEvent.click(button);
 
@@ -54,7 +59,9 @@ describe('CardItem Component', () => {
 	it('should decrease quantity by 1 when clicking on - button', () => {
 		renderProductCard();
 
-		const [buttonDecrease, buttonIncrease] = screen.getAllByRole('button');
+    const buttonDecrease = screen.getByTestId("decrement")
+    const buttonIncrease = screen.getByTestId("increment")
+
 		const quantity = screen.getByTestId('quantity');
 
 		fireEvent.click(buttonIncrease);
@@ -67,7 +74,7 @@ describe('CardItem Component', () => {
 	it('should not go below zero in the quantity', () => {
 		renderProductCard();
 
-		const [buttonDecrease] = screen.getAllByRole('button');
+    const buttonDecrease = screen.getByTestId("decrement")
 		const quantity = screen.getByTestId('quantity');
 
 		expect(quantity.textContent).toBe('1');
@@ -76,4 +83,19 @@ describe('CardItem Component', () => {
 
 		expect(quantity.textContent).toBe('0');
 	});
+
+  it("should be call remove() when remove button is clicked", async () => {
+    const result = renderHook(()=> useCartStore()).result
+    const spy = jest.spyOn(result.current.actions, "remove");
+
+    renderProductCard();
+
+
+    const button = screen.getByRole("button", { name: /remove/i });
+
+    fireEvent.click(button);
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
 });

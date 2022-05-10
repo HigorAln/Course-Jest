@@ -3,22 +3,21 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { Server } from 'miragejs';
 import { useCartStore } from '../../store/cart';
 import { makeServer } from '../miragejs/server';
+import { setAutoFreeze } from 'immer';
 import Cart from './cart';
+
+setAutoFreeze(false)
 
 describe('Cart', () => {
   let server: Server;
   let result: any;
   let add: any;
-  let toggle: any;
   let spy: any;
-  let reset;
 
   beforeEach(() => {
     server = makeServer({ environment: 'test' });
     result = renderHook(() => useCartStore()).result
-    reset = result.current.actions.reset;
     add = result.current.actions.add;
-    toggle = result.current.actions.toggle;
     spy = jest.spyOn(result.current.actions, 'toggle');
   })
 
@@ -27,17 +26,18 @@ describe('Cart', () => {
     jest.clearAllMocks()
   })
 
-  it('should add css class hidden in the component', () => {
+  it('should add css class "hidden" in the component', () => {
     render(<Cart />)
 
     expect(screen.getByTestId("cart")).toHaveClass("hidden")
   });
 
-  it('should add css class hidden in the component', () => {
-    act(()=> {
-      toggle();
-    })
+  it('should remove css class "hidden" in the component', () => {
     render(<Cart />)
+
+    const button = screen.getByTestId("close-button")
+
+    fireEvent.click(button)
 
     expect(screen.getByTestId("cart")).not.toHaveClass("hidden")
   });

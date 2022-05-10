@@ -8,12 +8,16 @@ describe('Cart store', () => {
   let result: any;
   let add: any;
   let toggle: any;
+  let remove: any;
+  let removeAll: any;
 
   beforeEach(()=>{
     server = makeServer({ environment: 'test' });
     result = renderHook(()=> useCartStore()).result;
     add = result.current.actions.add;
     toggle = result.current.actions.toggle;
+    remove = result.current.actions.remove;
+    removeAll = result.current.actions.removeAll;
   })
 
   afterEach(()=>{
@@ -30,7 +34,7 @@ describe('Cart store', () => {
     expect(result.current.state.products).toHaveLength(0);
   });
 
-  it('should add 2 products to the list', async () => {
+  it('should add 2 products to the list and open the cart', async () => {
     const products = server.createList("product", 2);
 
     for(const product of products){
@@ -38,6 +42,7 @@ describe('Cart store', () => {
     }
 
     expect(result.current.state.products).toHaveLength(2);
+    expect(result.current.state.open).toBe(true)
   });
 
   it('should not ad some product twice', () => {
@@ -62,4 +67,57 @@ describe('Cart store', () => {
     expect(result.current.state.open).toBe(false);
     expect(result.current.state.products).toHaveLength(0);
   });
+
+  it("should remove a product from store",() => {
+    const [product1, product2] = server.createList("product", 2);
+
+    act(()=>{
+      add(product1);
+      add(product2);
+    })
+
+    expect(result.current.state.products).toHaveLength(2);
+
+    act(()=>{
+      remove(product1);
+    })
+
+    expect(result.current.state.products).toHaveLength(1);
+    expect(result.current.state.products[0]).toEqual(product2);
+  })
+
+  it("should not change products in the cat if provided product is not in the array",() => {
+    const [product1, product2, product3] = server.createList("product", 3);
+
+    act(()=>{
+      add(product1);
+      add(product2);
+    })
+
+    expect(result.current.state.products).toHaveLength(2);
+
+    act(()=>{
+      remove(product3);
+    })
+
+    expect(result.current.state.products).toHaveLength(2);
+  })
+
+  it("should clear cart", () => {
+    const products = server.createList("product", 2);
+
+    act(()=>{
+      for(const product of products) {
+        add(product);
+      }
+    })
+    
+    expect(result.current.state.products).toHaveLength(2);
+
+    act(()=> {
+      removeAll();
+    })
+
+    expect(result.current.state.products).toHaveLength(0);
+  })
 });
